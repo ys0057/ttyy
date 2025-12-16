@@ -1,0 +1,62 @@
+﻿:root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #334155;
+}
+
+body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
+.container { max-width: 1400px; margin: 0 auto; }
+header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+h1 { margin: 0; display: flex; align-items: center; gap: 10px; color: #1e293b; }
+.badge { font-size: 0.4em; background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; vertical-align: middle; }
+
+/* 佈局 */
+.main-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+@media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+/* 表單控制 */
+.top-controls { display: flex; justify-content: space-between; margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.control-group { display: flex; align-items: center; gap: 10px; }
+input[type="number"] { width: 60px; padding: 5px; border: 1px solid var(--border); border-radius: 4px; }
+
+fieldset { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+legend { font-weight: bold; padding: 0 10px; color: var(--primary); }
+
+.field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.input-unit { display: flex; flex-direction: column; gap: 5px; }
+.input-unit.full-width { grid-column: 1 / -1; }
+.input-unit label { font-size: 0.85rem; font-weight: 600; color: #64748b; }
+
+.input-wrap { display: flex; gap: 5px; }
+input[type="text"] { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; transition: border 0.2s; }
+input[type="text"]:focus { border-color: var(--primary); outline: none; }
+.dice-btn { background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 0 10px; transition: 0.2s; }
+.dice-btn:hover { background: #e2e8f0; }
+
+.btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+.btn.primary { background: var(--primary); color: white; }
+.btn.success { background: var(--success); color: white; }
+.submit-btn { width: 100%; padding: 15px; background: #0f172a; color: white; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
+.submit-btn:hover { background: #1e293b; }
+
+/* 輸出區 */
+.output-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+.card-header { background: #f8fafc; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.tag { font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+.tag.en { background: #dbeafe; color: #1e40af; }
+.tag.zh { background: #ffedd5; color: #9a3412; }
+.tag.json { background: #f3e8ff; color: #6b21a8; }
+.copy-btn, .clear-btn { font-size: 0.75rem; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: white; cursor: pointer; }
+
+.code-box { padding: 15px; font-family: Consolas, monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; color: #334155; }
+.code-box.secondary { color: #64748b; font-size: 0.85rem; }
+.code-box.json-box { font-size: 0.75rem; max-height: 150px; overflow-y: auto; color: #475569; }
+
+/* 歷史紀錄 */
+.history-section { margin-top: 20px; border-top: 2px solid var(--border); padding-top: 20px; }
+.history-item { background: white; border: 1px solid var(--border); padding: 10px; margin-bottom: 10px; border-radius: 6px; font-size: 0.85rem; }
+.history-meta { color: #94a3b8; font-size: 0.75rem; display: flex; justify-content: space-between; margin-bottom: 5px; }
+.history-prompt { color: #334155; font-family: monospace; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
