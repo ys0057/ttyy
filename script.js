@@ -1,5 +1,5 @@
 ﻿// --- 1. 全域變數與配置 ---
-let DICTIONARY = {}; // 初始化為空，待 JSON 載入
+let DICTIONARY = {}; 
 
 const LABELS = { 
     "ethnicity": "種族", "gender": "性別", "hair": "頭髮", 
@@ -14,21 +14,20 @@ const HINTS = {
 };
 
 // --- 2. 核心：載入外部 JSON 詞庫 ---
-async function loadLibrary() {
+async function loadData() {
     try {
-        // 使用 fetch 取得外部 JSON 檔案
-        const response = await fetch('data.json');
-        if (!response.ok) throw new Error('無法載入詞庫檔 library.json');
+        // 修正：將 library.json 改為 data.json 以匹配你的上傳檔案
+        const response = await fetch('data.json'); 
+        if (!response.ok) throw new Error('無法載入詞庫檔 data.json');
         
         DICTIONARY = await response.json();
         
-        // 成功載入後才執行初始化渲染
         initDatalists();
         renderForm();
         console.log("詞庫載入成功!");
     } catch (error) {
         console.error("載入失敗:", error);
-        alert("詞庫載入失敗！請確保使用 Live Server 開啟網頁，且 library.json 檔案存在。");
+        alert("詞庫載入失敗！請確保使用 Live Server 開啟網頁，且 data.json 檔案存在。");
     }
 }
 
@@ -67,7 +66,6 @@ function renderForm() {
                     <span class="hint">${HINTS[attr]}</span>
                 </div>
             `;
-            // 延遲填充 datalist 選項 (確保 DOM 已掛載)
             setTimeout(() => createDatalist(listId, DICTIONARY[attr]), 0);
         });
         container.appendChild(fieldset);
@@ -86,9 +84,7 @@ function roll(targetId) {
 }
 
 document.getElementById('randomizeBtn').onclick = () => {
-    // 隨機全局欄位
     ["genre", "vibe", "quality", "location", "lighting", "angle", "lens"].forEach(k => roll(k));
-    // 隨機所有角色欄位
     document.querySelectorAll('input[id^="subject-"]').forEach(input => roll(input.id));
     generatePrompt();
 };
@@ -96,7 +92,7 @@ document.getElementById('randomizeBtn').onclick = () => {
 function findChinese(key, enValue) {
     if(!enValue) return "";
     const found = DICTIONARY[key]?.find(item => item.en.toLowerCase() === enValue.toLowerCase());
-    return found ? found.zh : enValue; // 找不到則顯示原輸入
+    return found ? found.zh : enValue; 
 }
 
 function generatePrompt(e) {
@@ -105,16 +101,15 @@ function generatePrompt(e) {
     let enParts = [];
     let zhParts = [];
 
-    // 1. 處理標題
     if(data.title) zhParts.push(`【標題】${data.title}`);
 
-    // 2. 處理角色
     const num = document.getElementById('numSubjects').value;
     for(let i=0; i<num; i++) {
         let sEn = []; let sZh = []; let sObj = {};
         ["ethnicity", "gender", "hair", "body", "outfit", "pose", "expression"].forEach(attr => {
-            const val = document.getElementById(`subject-${i}-${attr}`).value;
-            if(val) {
+            const input = document.getElementById(`subject-${i}-${attr}`);
+            if(input && input.value) {
+                const val = input.value;
                 sEn.push(val);
                 const zhVal = findChinese(attr, val);
                 sZh.push(zhVal);
@@ -128,10 +123,10 @@ function generatePrompt(e) {
         }
     }
 
-    // 3. 環境與風格
     ["location", "lighting", "genre", "vibe", "angle", "lens", "quality"].forEach(key => {
-        const val = document.getElementById(key).value;
-        if(val) {
+        const el = document.getElementById(key);
+        if(el && el.value) {
+            const val = el.value;
             enParts.push(val);
             zhParts.push(`【${key}】${findChinese(key, val)}`);
             data.raw_json[key] = { en: val, zh: findChinese(key, val) };
@@ -140,8 +135,10 @@ function generatePrompt(e) {
 
     data.prompt = enParts.join(", ");
     document.getElementById('out-en').textContent = data.prompt || "請輸入內容或點擊隨機";
-    document.getElementById('out-zh').textContent = zhParts.join("\n");
-    document.getElementById('out-json').textContent = JSON.stringify(data.raw_json, null, 2);
+    
+    // 確保這些 ID 在 HTML 中存在
+    if(document.getElementById('out-zh')) document.getElementById('out-zh').textContent = zhParts.join("\n");
+    if(document.getElementById('out-json')) document.getElementById('out-json').textContent = JSON.stringify(data.raw_json, null, 2);
     
     saveHistory(data.prompt, zhParts.join(" | "));
 }
@@ -159,6 +156,7 @@ function saveHistory(en, zh) {
 
 function renderHistory() {
     const list = document.getElementById('historyList');
+    if(!list) return;
     const history = JSON.parse(localStorage.getItem('v6_history') || '[]');
     list.innerHTML = history.map((item, index) => `
         <div class="history-item">
@@ -179,13 +177,16 @@ function copyTextH(i) {
 }
 
 function copyText(id) {
-    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("內容已複製"));
+    const el = document.getElementById(id);
+    if(el) {
+        navigator.clipboard.writeText(el.textContent).then(() => alert("內容已複製"));
+    }
 }
 
 // --- 啟動 ---
 document.getElementById('promptForm').addEventListener('submit', generatePrompt);
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadLibrary(); // 啟動時先載入 JSON
+    loadData();
     renderHistory();
 });
