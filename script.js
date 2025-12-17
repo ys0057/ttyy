@@ -1,5 +1,5 @@
 ﻿// --- 1. 全域變數與配置 ---
-let DICTIONARY = {}; 
+let DICTIONARY = {}; // 初始化為空，待 JSON 載入
 
 const LABELS = { 
     "ethnicity": "種族", "gender": "性別", "hair": "頭髮", 
@@ -16,26 +16,24 @@ const HINTS = {
 // --- 2. 核心：載入外部 JSON 詞庫 ---
 async function loadLibrary() {
     try {
-        // 重要修正：將檔名從 library.json 改為 data.json 以匹配您的檔案
-        const response = await fetch('data.json'); 
-        if (!response.ok) throw new Error('無法載入 data.json');
+        // 使用 fetch 取得外部 JSON 檔案
+        const response = await fetch('library.json');
+        if (!response.ok) throw new Error('無法載入詞庫檔 library.json');
         
         DICTIONARY = await response.json();
-        console.log("詞庫載入成功!");
         
+        // 成功載入後才執行初始化渲染
         initDatalists();
         renderForm();
+        console.log("詞庫載入成功!");
     } catch (error) {
         console.error("載入失敗:", error);
-        alert("詞庫載入失敗！請檢查檔案名稱是否為 data.json，並確保在 GitHub Pages 環境運行。");
-        // 備援方案：即使失敗也渲染空的表單
-        renderForm(); 
+        alert("詞庫載入失敗！請確保使用 Live Server 開啟網頁，且 library.json 檔案存在。");
     }
 }
 
 // --- 3. UI 渲染功能 ---
 function initDatalists() {
-    if (!DICTIONARY) return;
     ["genre", "vibe", "quality", "location", "lighting", "angle", "lens"].forEach(key => {
         createDatalist(`list-${key}`, DICTIONARY[key]);
     });
@@ -49,7 +47,6 @@ function createDatalist(id, items) {
 
 function renderForm() {
     const container = document.getElementById('subjectsContainer');
-    if (!container) return;
     const num = document.getElementById('numSubjects').value;
     container.innerHTML = '';
     const attrs = ["ethnicity", "gender", "hair", "body", "outfit", "pose", "expression"];
@@ -70,9 +67,8 @@ function renderForm() {
                     <span class="hint">${HINTS[attr]}</span>
                 </div>
             `;
-            if (DICTIONARY && DICTIONARY[attr]) {
-                setTimeout(() => createDatalist(listId, DICTIONARY[attr]), 0);
-            }
+            // 延遲填充 datalist 選項 (確保 DOM 已掛載)
+            setTimeout(() => createDatalist(listId, DICTIONARY[attr]), 0);
         });
         container.appendChild(fieldset);
     }
@@ -82,7 +78,7 @@ function renderForm() {
 function roll(targetId) {
     let key = targetId.includes('subject') ? targetId.split('-').pop() : targetId;
     const el = document.getElementById(targetId);
-    if (DICTIONARY && DICTIONARY[key] && el) {
+    if (DICTIONARY[key] && el) {
         const items = DICTIONARY[key];
         const randomItem = items[Math.floor(Math.random() * items.length)];
         el.value = randomItem.en;
@@ -90,15 +86,17 @@ function roll(targetId) {
 }
 
 document.getElementById('randomizeBtn').onclick = () => {
+    // 隨機全局欄位
     ["genre", "vibe", "quality", "location", "lighting", "angle", "lens"].forEach(k => roll(k));
+    // 隨機所有角色欄位
     document.querySelectorAll('input[id^="subject-"]').forEach(input => roll(input.id));
     generatePrompt();
 };
 
 function findChinese(key, enValue) {
-    if(!enValue || !DICTIONARY[key]) return enValue;
-    const found = DICTIONARY[key].find(item => item.en.toLowerCase() === enValue.toLowerCase());
-    return found ? found.zh : enValue;
+    if(!enValue) return "";
+    const found = DICTIONARY[key]?.find(item => item.en.toLowerCase() === enValue.toLowerCase());
+    return found ? found.zh : enValue; // 找不到則顯示原輸入
 }
 
 function generatePrompt(e) {
@@ -107,17 +105,15 @@ function generatePrompt(e) {
     let enParts = [];
     let zhParts = [];
 
-    if(data.title) {
-        enParts.push(data.title);
-        zhParts.push(`【標題】${data.title}`);
-    }
+    // 1. 處理標題
+    if(data.title) zhParts.push(`【標題】${data.title}`);
 
+    // 2. 處理角色
     const num = document.getElementById('numSubjects').value;
     for(let i=0; i<num; i++) {
         let sEn = []; let sZh = []; let sObj = {};
         ["ethnicity", "gender", "hair", "body", "outfit", "pose", "expression"].forEach(attr => {
-            const input = document.getElementById(`subject-${i}-${attr}`);
-            const val = input ? input.value : "";
+            const val = document.getElementById(`subject-${i}-${attr}`).value;
             if(val) {
                 sEn.push(val);
                 const zhVal = findChinese(attr, val);
@@ -132,6 +128,7 @@ function generatePrompt(e) {
         }
     }
 
+    // 3. 環境與風格
     ["location", "lighting", "genre", "vibe", "angle", "lens", "quality"].forEach(key => {
         const val = document.getElementById(key).value;
         if(val) {
@@ -178,18 +175,17 @@ function clearHistory() {
 }
 
 function copyTextH(i) {
-    const el = document.getElementById(`h-${i}`);
-    if(el) navigator.clipboard.writeText(el.value).then(() => alert("已複製歷史紀錄"));
+    navigator.clipboard.writeText(document.getElementById(`h-${i}`).value).then(() => alert("已複製歷史紀錄"));
 }
 
 function copyText(id) {
-    const el = document.getElementById(id);
-    if(el) navigator.clipboard.writeText(el.textContent).then(() => alert("內容已複製"));
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => alert("內容已複製"));
 }
 
+// --- 啟動 ---
 document.getElementById('promptForm').addEventListener('submit', generatePrompt);
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadLibrary();
+    loadLibrary(); // 啟動時先載入 JSON
     renderHistory();
 });
