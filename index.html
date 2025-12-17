@@ -1,141 +1,49 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator V5 Pro</title>
+    <title>AI 提示詞生成器 V6</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🤖 AI 繪圖提示詞生成器 <span class="badge">V5.0 Pro</span></h1>
-            <p>混合輸入模式 | 雙語對照輸出 | 結構化 JSON</p>
-        </header>
-        
-        <div class="top-controls">
-            <div class="control-group">
-                <label>👥 角色數量:</label>
-                <input type="number" id="numSubjects" value="1" min="0" max="5">
-                <button class="btn primary" onclick="renderForm()">更新配置</button>
-            </div>
-            <button class="btn success" id="randomizeBtn">✨ 全域隨機靈感 (Randomize All)</button>
-        </div>
 
-        <div class="main-layout">
-            <form id="promptForm">
-                <fieldset>
-                    <legend>🎨 畫風與氛圍 (Global Style)</legend>
-                    <div class="field-grid">
-                        <div class="input-unit full-width">
-                            <label>作品標題 (Title/Subject):</label>
-                            <input type="text" id="title" placeholder="例如：A futuristic city battle">
-                        </div>
-                        <div class="input-unit">
-                            <label>藝術風格 (Genre):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="genre" list="list-genre" placeholder="選擇或輸入...">
-                                <datalist id="list-genre"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('genre')">🎲</button>
-                            </div>
-                        </div>
-                        <div class="input-unit">
-                            <label>視覺氛圍 (Vibe):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="vibe" list="list-vibe" placeholder="選擇或輸入...">
-                                <datalist id="list-vibe"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('vibe')">🎲</button>
-                            </div>
-                        </div>
-                        <div class="input-unit">
-                            <label>畫質/渲染 (Quality):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="quality" list="list-quality" placeholder="選擇或輸入...">
-                                <datalist id="list-quality"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('quality')">🎲</button>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>
-                
-                <div id="subjectsContainer"></div>
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchMode('character')">人物模式</button>
+    <button class="tab-btn" onclick="switchMode('scene')">場景模式</button>
+</div>
 
-                <fieldset>
-                    <legend>🌍 環境與攝影 (Environment & Camera)</legend>
-                    <div class="field-grid">
-                        <div class="input-unit">
-                            <label>地點 (Location):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="location" list="list-location" placeholder="選擇或輸入...">
-                                <datalist id="list-location"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('location')">🎲</button>
-                            </div>
-                        </div>
-                        <div class="input-unit">
-                            <label>光線 (Lighting):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="lighting" list="list-lighting" placeholder="選擇或輸入...">
-                                <datalist id="list-lighting"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('lighting')">🎲</button>
-                            </div>
-                        </div>
-                        <div class="input-unit">
-                            <label>鏡頭角度 (Angle):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="angle" list="list-angle" placeholder="選擇或輸入...">
-                                <datalist id="list-angle"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('angle')">🎲</button>
-                            </div>
-                        </div>
-                        <div class="input-unit">
-                            <label>鏡頭規格 (Lens):</label>
-                            <div class="input-wrap">
-                                <input type="text" id="lens" list="list-lens" placeholder="選擇或輸入...">
-                                <datalist id="list-lens"></datalist>
-                                <button type="button" class="dice-btn" onclick="roll('lens')">🎲</button>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>
-                
-                <button type="submit" class="submit-btn">🚀 生成 Prompt (Generate)</button>
-            </form>
-
-            <div class="sidebar">
-                <div class="output-card">
-                    <div class="card-header">
-                        <span class="tag en">English Prompt (AI用)</span>
-                        <button class="copy-btn" onclick="copyText('out-en')">📋 複製</button>
-                    </div>
-                    <div id="out-en" class="code-box">等待生成...</div>
-                </div>
-
-                <div class="output-card">
-                    <div class="card-header">
-                        <span class="tag zh">中文結構參考</span>
-                        <button class="copy-btn" onclick="copyText('out-zh')">📋 複製</button>
-                    </div>
-                    <div id="out-zh" class="code-box secondary">等待生成...</div>
-                </div>
-
-                <div class="output-card">
-                    <div class="card-header">
-                        <span class="tag json">JSON Data</span>
-                        <button class="copy-btn" onclick="copyText('out-json')">📋 複製</button>
-                    </div>
-                    <div id="out-json" class="code-box json-box">{}</div>
-                </div>
-
-                <div class="history-section">
-                    <div class="card-header">
-                        <h3>📜 歷史紀錄 (History)</h3>
-                        <button class="clear-btn" onclick="clearHistory()">🗑️ 清空</button>
-                    </div>
-                    <div id="historyList"></div>
-                </div>
-            </div>
-        </div>
+<div class="container">
+    <h2 id="mode-title">人物提示詞生成器</h2>
+    
+    <div class="input-group">
+        <label>風格定位</label>
+        <input type="text" id="input-style" placeholder="選擇風格..." oninput="updateOutput()">
+        <small>💡 提示：決定整體的藝術風格、畫風或渲染方式</small>
     </div>
-    <script src="script.js"></script>
+
+    <div class="input-group">
+        <label>外觀設定 <span id="color-preview" class="color-preview"></span></label>
+        <input type="text" id="input-appearance" placeholder="描述外觀細節..." oninput="updateOutput()">
+        <small id="appearance-helper">💡 參考：頭髮(顏色、髮型)、身材、皮膚</small>
+    </div>
+
+    <div class="input-group">
+        <label>特徵細節</label>
+        <div id="detail-container">
+            <input type="text" class="detail-input" placeholder="例如：刺青、配件..." oninput="updateOutput()">
+        </div>
+        <button class="add-btn" onclick="addDetailField()">+ 增加更多細節</button>
+        <small>💡 提示：點擊按鈕增加更多個別特徵欄位</small>
+    </div>
+
+    <button class="random-btn" onclick="generateRandom()">🎲 全域隨機生成組合</button>
+
+    <div class="output-box">
+        <div id="output-text">等待輸入中...</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
