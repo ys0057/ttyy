@@ -17,7 +17,7 @@ const UI_TEXT = {
         labels: {
             genre: "2. 藝術風格",
             vibe: "3. 視覺氛圍",
-            gender: "性別(可在前面加上數量)", age: "年齡層", species: "物種", ethnicity: "族裔",
+            gender: "性別", age: "年齡層", species: "物種", ethnicity: "族裔",
             hairStyle: "髮型", hairColor: "髮色", body: "身材", outfit: "服裝",
             pose: "姿勢", expression: "表情", angle: "視角", location: "地點",
             lighting: "光影", quality: "畫質"
@@ -25,7 +25,7 @@ const UI_TEXT = {
     },
     en: {
         subtitle: "Core Weight Optimized | Dual-Language UI",
-        usage: "💡 This site provides combination ideas; feel free to add your own thoughts and adjectives to each field.",
+        usage: "💡 This site provides combination ideas; feel free to add your own thoughts and adjectives.",
         btnUpdate: "Update UI",
         btnRandom: "✨ Randomize All",
         btnGenerate: "🚀 Generate Prompt Now",
@@ -66,10 +66,8 @@ function setLanguage(lang) {
 function updateUI() {
     const t = UI_TEXT[UI_LANG];
     document.getElementById('ui-subtitle').innerText = t.subtitle;
-    
     const usageTip = document.getElementById('ui-usage-tip');
     if (usageTip) usageTip.innerText = t.usage;
-
     document.getElementById('btn-update').innerText = t.btnUpdate;
     document.getElementById('randomizeBtn').innerText = t.btnRandom;
     document.getElementById('ui-leg-core').innerText = t.legCore;
@@ -106,14 +104,12 @@ function renderForm() {
     const num = document.getElementById('numSubjects').value;
     const t = UI_TEXT[UI_LANG];
     container.innerHTML = '';
-
     const attrs = ["gender", "age", "species", "ethnicity", "body", "hairStyle", "hairColor", "outfit", "pose", "expression"];
     
     for(let i=0; i<num; i++) {
         const fieldset = document.createElement('fieldset');
         fieldset.innerHTML = `<legend>${t.legSub} ${i+1}</legend><div class="field-grid"></div>`;
         const grid = fieldset.querySelector('.field-grid');
-        
         attrs.forEach(attr => {
             const listId = `list-s${i}-${attr}`;
             const inputId = `subject-${i}-${attr}`;
@@ -127,11 +123,6 @@ function renderForm() {
             setTimeout(() => {
                 renderDatalist(listId, attr);
                 setupSmartInput(inputId);
-                
-                // 設定第一個角色預設值為女性
-                if(i === 0 && attr === "gender") {
-                    document.getElementById(inputId).value = (UI_LANG === 'zh' ? "女性" : "Female");
-                }
             }, 0);
         });
         container.appendChild(fieldset);
@@ -164,9 +155,11 @@ function generatePrompt() {
                 subZh.push(entry ? entry.zh : val);
             }
         });
-        // 核心修改：在英文提示詞每個角色前強制加上 "1 "
-        if(subEn.length) subjectsEn.push("1 " + subEn.join(', '));
-        if(subZh.length) subjectsZh.push("1名 " + subZh.join(', '));
+        // 核心修正：若有填寫角色內容，前面加上 "1 "
+        if(subEn.length) {
+            subjectsEn.push("1 " + subEn.join(', '));
+            subjectsZh.push("1名 " + subZh.join(', '));
+        }
     }
     
     const genreEntry = DICTIONARY.genre.find(i => i.en === genre || i.zh === genre);
@@ -194,7 +187,6 @@ document.getElementById('randomizeBtn').onclick = () => {
         const items = DICTIONARY[k];
         if(items) document.getElementById(k).value = items[Math.floor(Math.random()*items.length)][UI_LANG];
     });
-
     const num = document.getElementById('numSubjects').value;
     const attrs = ["gender", "age", "species", "ethnicity", "body", "hairStyle", "hairColor", "outfit", "pose", "expression"];
     for(let i=0; i<num; i++){
