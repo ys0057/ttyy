@@ -25,7 +25,7 @@ const UI_TEXT = {
     },
     en: {
         subtitle: "Core Weight Optimized | Dual-Language UI",
-        usage: "💡 This site provides inspiration; feel free to add your own ideas and adjectives to any field.",
+        usage: "💡 This site provides combination ideas; feel free to add your own thoughts and adjectives to each field.",
         btnUpdate: "Update UI",
         btnRandom: "✨ Randomize All",
         btnGenerate: "🚀 Generate Prompt Now",
@@ -66,7 +66,11 @@ function setLanguage(lang) {
 function updateUI() {
     const t = UI_TEXT[UI_LANG];
     document.getElementById('ui-subtitle').innerText = t.subtitle;
-    document.getElementById('ui-usage-tip').innerText = t.usage; // 更新使用說明文字
+    
+    // 更新顯眼的使用說明橫幅文字
+    const usageTip = document.getElementById('ui-usage-tip');
+    if (usageTip) usageTip.innerText = t.usage;
+
     document.getElementById('btn-update').innerText = t.btnUpdate;
     document.getElementById('randomizeBtn').innerText = t.btnRandom;
     document.getElementById('ui-leg-core').innerText = t.legCore;
@@ -76,6 +80,7 @@ function updateUI() {
     document.getElementById('ui-history-title').innerText = t.history;
     document.querySelector('.large-primary').innerText = t.btnGenerate;
 
+    // 統一循環處理所有標籤與下拉選單
     ["genre", "vibe", "angle", "location", "lighting", "quality"].forEach(k => {
         const labelEl = document.getElementById(`ui-label-${k}`);
         if(labelEl) labelEl.innerText = (t.labels[k] || k) + ":";
@@ -95,6 +100,7 @@ function setupSmartInput(id) {
 function renderDatalist(id, key) {
     const dl = document.getElementById(id);
     if (!dl || !DICTIONARY[key]) return;
+    // 根據當前語系顯示對應的選項
     dl.innerHTML = DICTIONARY[key].map(i => `<option value="${i[UI_LANG]}"></option>`).join('');
 }
 
