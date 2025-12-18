@@ -17,7 +17,7 @@ const UI_TEXT = {
         labels: {
             genre: "2. 藝術風格",
             vibe: "3. 視覺氛圍",
-            gender: "性別", age: "年齡層", species: "物種", ethnicity: "族裔",
+            gender: "性別(可在前面加上數量)", age: "年齡層", species: "物種", ethnicity: "族裔",
             hairStyle: "髮型", hairColor: "髮色", body: "身材", outfit: "服裝",
             pose: "姿勢", expression: "表情", angle: "視角", location: "地點",
             lighting: "光影", quality: "畫質"
@@ -67,7 +67,6 @@ function updateUI() {
     const t = UI_TEXT[UI_LANG];
     document.getElementById('ui-subtitle').innerText = t.subtitle;
     
-    // 更新顯眼的使用說明橫幅文字
     const usageTip = document.getElementById('ui-usage-tip');
     if (usageTip) usageTip.innerText = t.usage;
 
@@ -80,7 +79,6 @@ function updateUI() {
     document.getElementById('ui-history-title').innerText = t.history;
     document.querySelector('.large-primary').innerText = t.btnGenerate;
 
-    // 統一循環處理所有標籤與下拉選單
     ["genre", "vibe", "angle", "location", "lighting", "quality"].forEach(k => {
         const labelEl = document.getElementById(`ui-label-${k}`);
         if(labelEl) labelEl.innerText = (t.labels[k] || k) + ":";
@@ -100,7 +98,6 @@ function setupSmartInput(id) {
 function renderDatalist(id, key) {
     const dl = document.getElementById(id);
     if (!dl || !DICTIONARY[key]) return;
-    // 根據當前語系顯示對應的選項
     dl.innerHTML = DICTIONARY[key].map(i => `<option value="${i[UI_LANG]}"></option>`).join('');
 }
 
@@ -130,6 +127,11 @@ function renderForm() {
             setTimeout(() => {
                 renderDatalist(listId, attr);
                 setupSmartInput(inputId);
+                
+                // 設定第一個角色預設值為女性
+                if(i === 0 && attr === "gender") {
+                    document.getElementById(inputId).value = (UI_LANG === 'zh' ? "女性" : "Female");
+                }
             }, 0);
         });
         container.appendChild(fieldset);
@@ -162,8 +164,9 @@ function generatePrompt() {
                 subZh.push(entry ? entry.zh : val);
             }
         });
-        if(subEn.length) subjectsEn.push(subEn.join(', '));
-        if(subZh.length) subjectsZh.push(subZh.join(', '));
+        // 核心修改：在英文提示詞每個角色前強制加上 "1 "
+        if(subEn.length) subjectsEn.push("1 " + subEn.join(', '));
+        if(subZh.length) subjectsZh.push("1名 " + subZh.join(', '));
     }
     
     const genreEntry = DICTIONARY.genre.find(i => i.en === genre || i.zh === genre);
