@@ -1,4 +1,4 @@
-let DICTIONARY = {};
+﻿let DICTIONARY = {};
 let UI_LANG = 'zh';
 
 const UI_TEXT = {
@@ -11,11 +11,11 @@ const UI_TEXT = {
         legEnv: "📸 環境與攝影",
         legSub: "👤 角色設定 Subject",
         labelTitle: "1. 描述你的圖像主題 (Title):",
-        labelGenre: "2. 藝術風格 (Genre):",
-        labelVibe: "3. 視覺氛圍 (Vibe):",
         labelNum: "👥 角色數量:",
         history: "📜 歷史紀錄",
         labels: {
+            genre: "2. 藝術風格", // 補齊標籤
+            vibe: "3. 視覺氛圍",  // 補齊標籤
             gender: "性別", age: "年齡層", species: "物種", ethnicity: "族裔",
             hairStyle: "髮型", hairColor: "髮色", body: "身材", outfit: "服裝",
             pose: "姿勢", expression: "表情", angle: "視角", location: "地點",
@@ -31,11 +31,11 @@ const UI_TEXT = {
         legEnv: "📸 Environment & Camera",
         legSub: "👤 Subject Settings",
         labelTitle: "1. Image Topic (Title):",
-        labelGenre: "2. Art Genre:",
-        labelVibe: "3. Visual Vibe:",
         labelNum: "Subject Count:",
         history: "📜 History",
         labels: {
+            genre: "2. Art Genre",
+            vibe: "3. Visual Vibe",
             gender: "Gender", age: "Age Group", species: "Species", ethnicity: "Ethnicity",
             hairStyle: "Hair Style", hairColor: "Hair Color", body: "Body Type", outfit: "Outfit",
             pose: "Pose", expression: "Expression", angle: "Angle", location: "Location",
@@ -56,7 +56,7 @@ function setLanguage(lang) {
     UI_LANG = lang;
     document.querySelectorAll('.lang-btn').forEach(b => {
         const btnText = b.innerText.toLowerCase();
-        b.classList.toggle('active', (lang === 'zh' ? btnText.includes('繁') : btnText.includes('en')));
+        b.classList.toggle('active', (lang === 'zh' ? (btnText.includes('繁') || btnText.includes('zh')) : btnText.includes('en')));
     });
     updateUI();
 }
@@ -69,15 +69,11 @@ function updateUI() {
     document.getElementById('ui-leg-core').innerText = t.legCore;
     document.getElementById('ui-leg-env').innerText = t.legEnv;
     document.getElementById('ui-label-title').innerText = t.labelTitle;
-    
-    // 修正標題顯示錯誤
-    document.getElementById('ui-label-genre').innerText = t.labelGenre;
-    document.getElementById('ui-label-vibe').innerText = t.labelVibe;
-    
     document.getElementById('ui-label-num').innerText = t.labelNum;
     document.getElementById('ui-history-title').innerText = t.history;
     document.querySelector('.large-primary').innerText = t.btnGenerate;
 
+    // 統一循環處理所有標籤與下拉選單
     ["genre", "vibe", "angle", "location", "lighting", "quality"].forEach(k => {
         const labelEl = document.getElementById(`ui-label-${k}`);
         if(labelEl) labelEl.innerText = (t.labels[k] || k) + ":";
@@ -87,7 +83,6 @@ function updateUI() {
     renderForm();
 }
 
-// 優化：點擊輸入框自動顯示選單
 function setupSmartInput(id) {
     const el = document.getElementById(id);
     if(!el) return;
@@ -98,6 +93,7 @@ function setupSmartInput(id) {
 function renderDatalist(id, key) {
     const dl = document.getElementById(id);
     if (!dl || !DICTIONARY[key]) return;
+    // 根據當前語系顯示對應的選項
     dl.innerHTML = DICTIONARY[key].map(i => `<option value="${i[UI_LANG]}"></option>`).join('');
 }
 
@@ -124,7 +120,6 @@ function renderForm() {
                     <datalist id="${listId}"></datalist>
                 </div>
             `;
-            // 使用非同步確保 DOM 已掛載
             setTimeout(() => {
                 renderDatalist(listId, attr);
                 setupSmartInput(inputId);
@@ -183,12 +178,11 @@ function generatePrompt() {
     saveHistory(en);
 }
 
-// 隨機靈感功能全面升級：含角色屬性
 document.getElementById('randomizeBtn').onclick = () => {
     const mainKeys = ["genre", "vibe", "angle", "location", "lighting", "quality"];
     mainKeys.forEach(k => {
         const items = DICTIONARY[k];
-        document.getElementById(k).value = items[Math.floor(Math.random()*items.length)][UI_LANG];
+        if(items) document.getElementById(k).value = items[Math.floor(Math.random()*items.length)][UI_LANG];
     });
 
     const num = document.getElementById('numSubjects').value;
