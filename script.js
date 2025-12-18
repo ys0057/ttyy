@@ -5,18 +5,11 @@ const SUBJECT_ATTRS = ["gender", "age", "species", "ethnicity", "body", "hairSty
 
 const UI_TEXT = {
     zh: {
-        subtitle: "核心權重優化 | 包含配件支援",
-        usage: "💡 1. 選擇條件 > 2. 生成提示詞 > 3. 複製貼上。欄位間距已加大，方便閱讀與點擊。",
-        btnUpdate: "更新配置",
-        btnRandom: "✨ 隨機靈感 (Randomize All)",
-        btnGenerate: "🚀 立即生成提示詞 (Generate)",
-        btnReset: "🗑️ 清空重製",
-        legCore: "🎨 核心視覺 (Core Style)",
-        legEnv: "📸 環境與攝影",
-        legSub: "👤 角色設定 Subject",
-        labelTitle: "1. 描述你的圖像主題 (Title):",
-        labelNum: "👥 角色數量:",
-        history: "📜 歷史紀錄 (點擊載入)",
+        subtitle: "核心權重優化 | 配件支援 | 歷史載入",
+        usage: "💡 1. 選擇條件 > 2. 生成提示詞 > 3. 點擊歷史紀錄可重新載入結果。",
+        btnUpdate: "更新配置", btnRandom: "✨ 隨機靈感 (Randomize All)", btnGenerate: "🚀 立即生成提示詞 (Generate)", btnReset: "🗑️ 清空重製",
+        legCore: "🎨 核心視覺 (Core Style)", legEnv: "📸 環境與攝影", legSub: "👤 角色設定 Subject",
+        labelTitle: "1. 描述你的圖像主題 (Title):", labelNum: "👥 角色數量:", history: "📜 歷史紀錄 (點擊可回載結果)",
         labels: {
             genre: "2. 藝術風格", vibe: "3. 視覺氛圍", gender: "性別", age: "年齡層", 
             species: "物種", ethnicity: "族裔", hairStyle: "髮型", hairColor: "髮色", 
@@ -25,18 +18,11 @@ const UI_TEXT = {
         }
     },
     en: {
-        subtitle: "Core Weight Optimized | Accessory Support",
-        usage: "💡 1. Select > 2. Generate > 3. Copy/Paste. Spacing increased for better UX.",
-        btnUpdate: "Update UI",
-        btnRandom: "✨ Randomize All",
-        btnGenerate: "🚀 Generate Now",
-        btnReset: "🗑️ Reset All",
-        legCore: "🎨 Core Style",
-        legEnv: "📸 Environment",
-        legSub: "👤 Subject Settings",
-        labelTitle: "1. Image Topic (Title):",
-        labelNum: "Subjects:",
-        history: "📜 History",
+        subtitle: "Core Weight Optimized | History Loading",
+        usage: "💡 1. Select > 2. Generate > 3. Click history items to reload results.",
+        btnUpdate: "Update UI", btnRandom: "✨ Randomize All", btnGenerate: "🚀 Generate Now", btnReset: "🗑️ Reset All",
+        legCore: "🎨 Core Style", legEnv: "📸 Environment", legSub: "👤 Subject Settings",
+        labelTitle: "1. Image Topic (Title):", labelNum: "Subjects:", history: "📜 History (Click to reload)",
         labels: {
             genre: "Style", vibe: "Vibe", gender: "Gender", age: "Age",
             species: "Species", ethnicity: "Ethnicity", hairStyle: "Hair", hairColor: "Color",
@@ -63,7 +49,6 @@ function setLanguage(lang) {
 function updateUI() {
     const t = UI_TEXT[UI_LANG];
     const safeSetText = (id, text) => { if(document.getElementById(id)) document.getElementById(id).innerText = text; };
-    
     safeSetText('ui-subtitle', t.subtitle);
     safeSetText('ui-usage-tip', t.usage);
     safeSetText('btn-update', t.btnUpdate);
@@ -96,12 +81,10 @@ function renderForm() {
     const num = parseInt(document.getElementById('numSubjects').value) || 0;
     const t = UI_TEXT[UI_LANG];
     container.innerHTML = '';
-    
     for(let i=0; i<num; i++) {
         const fieldset = document.createElement('fieldset');
         fieldset.innerHTML = `<legend>${t.legSub} ${i+1}</legend><div class="field-grid"></div>`;
         const grid = fieldset.querySelector('.field-grid');
-        
         SUBJECT_ATTRS.forEach(attr => {
             const listId = `list-s${i}-${attr}`;
             const inputId = `subject-${i}-${attr}`;
@@ -125,6 +108,7 @@ function resetAllFields() {
         renderForm();
         document.getElementById('out-en').innerText = '...';
         document.getElementById('out-zh').innerText = '...';
+        document.getElementById('out-json').innerText = '{}';
     }
 }
 
@@ -154,9 +138,15 @@ function generatePrompt() {
     const en = `${getVal('genre')}, ${title}, ${getVal('vibe')}, ${subEn.join(' and ')}, ${envE}`;
     const zh = `【風格】${getVal('genre')}\n【主題】${title}\n【氛圍】${getVal('vibe')}\n【角色】${subZh.join(' 與 ')}`;
 
+    displayResult(en, zh);
+    saveHistory(en, zh);
+}
+
+// 統一顯示結果的函數
+function displayResult(en, zh) {
     document.getElementById('out-en').innerText = en;
     document.getElementById('out-zh').innerText = zh;
-    saveHistory(en, zh);
+    document.getElementById('out-json').innerText = JSON.stringify({ en, zh }, null, 2);
 }
 
 document.getElementById('randomizeBtn').onclick = () => {
@@ -186,15 +176,34 @@ function copyText(id) {
 
 function saveHistory(en, zh) {
     let history = JSON.parse(localStorage.getItem('app_history') || '[]');
-    history.unshift({ time: new Date().toLocaleTimeString(), en });
+    if(history.length > 0 && history[0].en === en) return;
+    history.unshift({ time: new Date().toLocaleTimeString(), en, zh });
     localStorage.setItem('app_history', JSON.stringify(history.slice(0, 10)));
     renderHistory();
 }
 
+// 渲染歷史紀錄並綁定載入功能
 function renderHistory() {
     const list = document.getElementById('historyList');
     const history = JSON.parse(localStorage.getItem('app_history') || '[]');
-    list.innerHTML = history.map(item => `<div class="history-item"><small>${item.time}</small><div>${item.en.substring(0, 50)}...</div></div>`).join('');
+    list.innerHTML = history.map((item, index) => `
+        <div class="history-item" onclick="loadHistoryItem(${index})">
+            <small class="history-time">${item.time}</small>
+            <div class="history-prompt">${item.en.substring(0, 50)}...</div>
+        </div>
+    `).join('');
+}
+
+// 實作歷史紀錄載入
+function loadHistoryItem(index) {
+    const history = JSON.parse(localStorage.getItem('app_history') || '[]');
+    const item = history[index];
+    if(item) {
+        displayResult(item.en, item.zh);
+        const outBox = document.getElementById('out-en');
+        outBox.style.backgroundColor = '#ecfdf5';
+        setTimeout(() => outBox.style.backgroundColor = '', 600);
+    }
 }
 
 function clearHistory() { localStorage.removeItem('app_history'); renderHistory(); }

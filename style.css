@@ -54,3 +54,50 @@ legend { font-weight: bold; padding: 0 15px; color: var(--primary); font-size: 1
 .history-item:hover { background: #f8fafc; }
 
 @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+.json-box {
+    background-color: #1e1e1e; /* 深色背景 */
+    color: #9cdcfe;           /* 程式碼淺藍色 */
+    font-size: 0.85rem;
+    border-radius: 0 0 12px 12px;
+    border-top: 1px solid #333;
+}
+
+/* 歷史紀錄項目的排版優化 */
+.history-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: #f8fafc;
+}
+
+.history-time {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.history-prompt {
+    font-size: 0.8rem;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文字過長顯示省略號 */
+}
+
+/* 複製成功的閃爍動畫 */
+@keyframes flash-success { 
+    0% { background-color: #fff; } 
+    50% { background-color: #ecfdf5; } 
+    100% { background-color: #fff; } 
+}
+
+.flash-active { 
+    animation: flash-success 0.8s ease; 
+    border: 2px solid var(--success) !important; 
+}
