@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator V7</title>
+    <title>AI Prompt Generator V7.1</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-main">
-                <h1>🤖 AI Prompt Generator <span class="badge">V7.0</span></h1>
+                <h1>🤖 AI Prompt Generator <span class="badge">V7.1</span></h1>
                 <div class="lang-switcher">
                     <button class="lang-btn active" onclick="setLanguage('zh')">繁中</button>
                     <button class="lang-btn" onclick="setLanguage('en')">EN</button>
@@ -25,7 +25,7 @@
                 <input type="number" id="numSubjects" value="1" min="0" max="5">
                 <button class="btn primary" id="btn-update" onclick="renderForm()">更新配置</button>
             </div>
-            <button class="btn success" id="randomizeBtn">✨ 隨機靈感 (Randomize All)</button>
+            <button class="btn success-heavy" id="randomizeBtn">✨ 隨機靈感 (Randomize All)</button>
         </div>
 
         <div class="main-layout">
@@ -36,42 +36,41 @@
                         <div class="input-unit full-width highlight">
                             <label id="ui-label-title">1. 描述你的圖像主題 (Title):</label>
                             <input type="text" id="title" placeholder="例：身穿盔甲的女戰士站在落日下的荒野">
-                            <span class="hint" id="ui-hint-title">此欄位決定畫面的核心內容。</span>
                         </div>
                         <div class="input-unit highlight">
                             <label id="ui-label-genre">2. 藝術風格 (Genre):</label>
-                            <input type="text" id="genre" list="list-genre" placeholder="選擇風格...">
+                            <input type="text" id="genre" list="list-genre" placeholder="選取或輸入...">
                             <datalist id="list-genre"></datalist>
                         </div>
                         <div class="input-unit highlight">
                             <label id="ui-label-vibe">3. 視覺氛圍 (Vibe):</label>
-                            <input type="text" id="vibe" list="list-vibe" placeholder="選擇場景情緒...">
+                            <input type="text" id="vibe" list="list-vibe" placeholder="選取或輸入...">
                             <datalist id="list-vibe"></datalist>
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset>
-    <legend id="ui-leg-env">📸 環境與攝影 (Environment)</legend>
-    <div class="field-grid">
-        <div class="input-unit">
-            <label id="ui-label-angle">視角 (Angle):</label>
-            <input type="text" id="angle" list="list-angle"> <datalist id="list-angle"></datalist>
-        </div>
-        <div class="input-unit">
-            <label id="ui-label-location">地點 (Location):</label>
-            <input type="text" id="location" list="list-location"> <datalist id="list-location"></datalist>
-        </div>
-        <div class="input-unit">
-            <label id="ui-label-lighting">光影 (Lighting):</label>
-            <input type="text" id="lighting" list="list-lighting"> <datalist id="list-lighting"></datalist>
-        </div>
-        <div class="input-unit">
-            <label id="ui-label-quality">畫質 (Quality):</label>
-            <input type="text" id="quality" list="list-quality"> <datalist id="list-quality"></datalist>
-        </div>
-    </div>
-</fieldset>
+                    <legend id="ui-leg-env">📸 環境與攝影 (Environment)</legend>
+                    <div class="field-grid">
+                        <div class="input-unit">
+                            <label id="ui-label-angle">視角 (Angle):</label>
+                            <input type="text" id="angle" list="list-angle"> <datalist id="list-angle"></datalist>
+                        </div>
+                        <div class="input-unit">
+                            <label id="ui-label-location">地點 (Location):</label>
+                            <input type="text" id="location" list="list-location"> <datalist id="list-location"></datalist>
+                        </div>
+                        <div class="input-unit">
+                            <label id="ui-label-lighting">光影 (Lighting):</label>
+                            <input type="text" id="lighting" list="list-lighting"> <datalist id="list-lighting"></datalist>
+                        </div>
+                        <div class="input-unit">
+                            <label id="ui-label-quality">畫質 (Quality):</label>
+                            <input type="text" id="quality" list="list-quality"> <datalist id="list-quality"></datalist>
+                        </div>
+                    </div>
+                </fieldset>
 
                 <div id="subjectsContainer"></div>
 
