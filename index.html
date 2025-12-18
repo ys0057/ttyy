@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator V8.2</title>
+    <title>AI Prompt Generator V8.5</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-main">
-                <h1>🤖 AI Prompt Generator <span class="badge">V8.2</span></h1>
+                <h1>🤖 AI Prompt Generator <span class="badge">V8.5</span></h1>
                 <div class="lang-switcher">
                     <button class="lang-btn active" onclick="setLanguage('zh')">繁中</button>
                     <button class="lang-btn" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
-            <p id="ui-subtitle">專業級 AI 繪圖提示詞生成工具</p>
+            <p id="ui-subtitle">載入中...</p>
         </header>
 
         <div class="info-banner">
             <div class="info-content">
                 <span class="info-icon">💡</span>
-                <p id="ui-usage-tip">步驟1.選擇或手動輸入條件<br>
-步驟2.按下生成提示詞並複製<br>
-步驟3.使用喜歡的生成式工具貼上<br>
-(每個欄位都可以增加自己喜歡的形容詞使其更生動)</p>
+                <p id="ui-usage-tip">...</p>
             </div>
         </div>
         
@@ -46,16 +43,16 @@
                 <fieldset class="high-priority">
                     <legend id="ui-leg-core">🎨 核心視覺 (Core Style)</legend>
                     <div class="field-grid">
-                        <div class="input-unit full-width highlight">
+                        <div class="input-unit full-width">
                             <label id="ui-label-title">1. 描述你的圖像主題 (Title):</label>
-                            <input type="text" id="title" placeholder="例：身穿盔甲的女戰士站在落日下的荒野">
+                            <input type="text" id="title" placeholder="例如：身穿盔甲的女戰士站在落日下的荒野">
                         </div>
-                        <div class="input-unit highlight">
+                        <div class="input-unit">
                             <label id="ui-label-genre">2. 藝術風格 (Genre):</label>
                             <input type="text" id="genre" list="list-genre" placeholder="選取或輸入...">
                             <datalist id="list-genre"></datalist>
                         </div>
-                        <div class="input-unit highlight">
+                        <div class="input-unit">
                             <label id="ui-label-vibe">3. 視覺氛圍 (Vibe):</label>
                             <input type="text" id="vibe" list="list-vibe" placeholder="選取或輸入...">
                             <datalist id="list-vibe"></datalist>
@@ -93,7 +90,7 @@
             </form>
 
             <div class="output-side">
-                <div class="output-card highlight">
+                <div class="output-card">
                     <div class="card-header">
                         <span class="tag en">English Prompt (AI用)</span>
                         <button class="copy-btn" onclick="copyText('out-en')">📋 複製</button>
