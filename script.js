@@ -1,4 +1,4 @@
-let DICTIONARY = {};
+﻿let DICTIONARY = {};
 let UI_LANG = 'zh';
 
 const UI_TEXT = {
