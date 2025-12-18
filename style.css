@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
     --bg: #f8fafc;
@@ -19,14 +19,20 @@ header { display: flex; flex-direction: column; margin-bottom: 25px; border-bott
 .lang-btn.active { background: var(--primary); color: white; }
 
 /* 控制區優化 */
-.top-controls { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; align-items: stretch; flex-wrap: wrap; }
+.top-controls { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; align-items: flex-start; flex-wrap: wrap; }
 .control-group { background: white; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .control-group input { width: 60px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
 
-/* 隨機靈感按鈕加強 */
+/* 修改點：限制按鈕區塊寬度約 50% 並垂直排列說明文字 */
+.action-zone {
+    flex: 0 0 45%; 
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .success-heavy {
-    flex: 1;
-    min-width: 250px;
+    width: 100%;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     font-size: 1.1rem;
@@ -39,6 +45,15 @@ header { display: flex; flex-direction: column; margin-bottom: 25px; border-bott
     transition: 0.3s transform;
 }
 .success-heavy:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* 修改點：使用說明樣式 */
+.usage-tip {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.4;
+    font-style: italic;
+}
 
 .main-layout { display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
 
@@ -78,4 +93,5 @@ legend { font-weight: bold; padding: 0 12px; color: var(--primary); font-size: 1
 
 @media (max-width: 1000px) {
     .main-layout { grid-template-columns: 1fr; }
+    .action-zone { flex: 1 0 100%; }
 }

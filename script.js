@@ -4,6 +4,7 @@ let UI_LANG = 'zh';
 const UI_TEXT = {
     zh: {
         subtitle: "核心權重優化 | 雙語切換介面",
+        usage: "💡 本站提供組合發想，每個欄位皆可再添加自己的想法與形容詞",
         btnUpdate: "更新配置",
         btnRandom: "✨ 隨機靈感 (Randomize All)",
         btnGenerate: "🚀 立即生成提示詞 (Generate)",
@@ -14,8 +15,8 @@ const UI_TEXT = {
         labelNum: "👥 角色數量:",
         history: "📜 歷史紀錄",
         labels: {
-            genre: "2. 藝術風格", // 補齊標籤
-            vibe: "3. 視覺氛圍",  // 補齊標籤
+            genre: "2. 藝術風格",
+            vibe: "3. 視覺氛圍",
             gender: "性別", age: "年齡層", species: "物種", ethnicity: "族裔",
             hairStyle: "髮型", hairColor: "髮色", body: "身材", outfit: "服裝",
             pose: "姿勢", expression: "表情", angle: "視角", location: "地點",
@@ -24,6 +25,7 @@ const UI_TEXT = {
     },
     en: {
         subtitle: "Core Weight Optimized | Dual-Language UI",
+        usage: "💡 This site provides inspiration; feel free to add your own ideas and adjectives to any field.",
         btnUpdate: "Update UI",
         btnRandom: "✨ Randomize All",
         btnGenerate: "🚀 Generate Prompt Now",
@@ -64,6 +66,7 @@ function setLanguage(lang) {
 function updateUI() {
     const t = UI_TEXT[UI_LANG];
     document.getElementById('ui-subtitle').innerText = t.subtitle;
+    document.getElementById('ui-usage-tip').innerText = t.usage; // 更新使用說明文字
     document.getElementById('btn-update').innerText = t.btnUpdate;
     document.getElementById('randomizeBtn').innerText = t.btnRandom;
     document.getElementById('ui-leg-core').innerText = t.legCore;
@@ -73,7 +76,6 @@ function updateUI() {
     document.getElementById('ui-history-title').innerText = t.history;
     document.querySelector('.large-primary').innerText = t.btnGenerate;
 
-    // 統一循環處理所有標籤與下拉選單
     ["genre", "vibe", "angle", "location", "lighting", "quality"].forEach(k => {
         const labelEl = document.getElementById(`ui-label-${k}`);
         if(labelEl) labelEl.innerText = (t.labels[k] || k) + ":";
@@ -93,7 +95,6 @@ function setupSmartInput(id) {
 function renderDatalist(id, key) {
     const dl = document.getElementById(id);
     if (!dl || !DICTIONARY[key]) return;
-    // 根據當前語系顯示對應的選項
     dl.innerHTML = DICTIONARY[key].map(i => `<option value="${i[UI_LANG]}"></option>`).join('');
 }
 
