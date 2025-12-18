@@ -11,10 +11,8 @@ const UI_TEXT = {
         legEnv: "📸 環境與攝影",
         legSub: "👤 角色設定 Subject",
         labelTitle: "1. 描述你的圖像主題 (Title):",
-        // 修正標籤名稱，與代碼邏輯一致
         labelGenre: "2. 藝術風格 (Genre):", 
         labelVibe: "3. 視覺氛圍 (Vibe):",
-        // 未選擇前的預設文字 (Placeholder)
         placeholderGenre: "選擇風格...",
         placeholderVibe: "選擇場景情緒...",
         labelNum: "👥 角色數量:",
@@ -242,3 +240,4 @@ function copyText(id) {
 }
 
 window.onload = loadLibrary;
+
