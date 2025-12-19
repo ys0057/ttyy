@@ -118,8 +118,8 @@
         .form-footer { display: flex; gap: 15px; margin-top: 10px; }
         .btn-reset { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; color: #64748b; font-weight: 600; }
 
-        .history-section { max-height: 300px; overflow-y: auto; padding: 10px; }
-        .history-item { padding: 8px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.8rem; }
+        .history-section { max-height: 300px; overflow-y: auto; padding: 10px; background: white; border-radius: 12px; border: 1px solid var(--border); }
+        .history-item { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.8rem; transition: background 0.2s; }
         .history-item:hover { background: #f8fafc; }
 
         @media (max-width: 1100px) { 
@@ -227,7 +227,7 @@
                     <div id="out-json" class="code-box json-box">{}</div>
                 </div>
 
-                <div class="history-section" id="historyList">
+                <div id="historyList" class="history-section">
                     </div>
             </div>
         </div>
@@ -269,7 +269,8 @@
                 const res = await fetch('data.json');
                 DICTIONARY = await res.json();
                 setLanguage('zh');
-            } catch (e) { console.error("Data Error", e); }
+                renderHistory();
+            } catch (e) { console.error("Data Load Error", e); }
         }
 
         function setLanguage(lang) {
@@ -277,6 +278,7 @@
             document.getElementById('ui-subtitle').innerText = UI_TEXT[UI_LANG].subtitle;
             document.getElementById('ui-usage-tip').innerText = UI_TEXT[UI_LANG].usage;
             
+            // 重新渲染固定欄位的 datalist
             ["genre", "vibe", "angle", "location", "lighting", "quality"].forEach(k => {
                 renderDatalist(`list-${k}`, k);
             });
@@ -295,6 +297,7 @@
             const num = parseInt(document.getElementById('numSubjects').value) || 0;
             const t = UI_TEXT[UI_LANG];
             
+            // 效能優化：使用 DocumentFragment
             const fragment = document.createDocumentFragment();
             for(let i=0; i<num; i++) {
                 const fieldset = document.createElement('fieldset');
@@ -310,6 +313,7 @@
                         <datalist id="list-s${i}-${attr}"></datalist>
                     `;
                     grid.appendChild(unit);
+                    // 異步渲染角色屬性選單
                     setTimeout(() => renderDatalist(`list-s${i}-${attr}`, attr), 0);
                 });
                 fragment.appendChild(fieldset);
@@ -330,6 +334,7 @@
                 SUBJECT_ATTRS.forEach(a => {
                     const v = getVal(`subject-${i}-${a}`);
                     if(v) {
+                        // 比對字典取得英文對應
                         const item = DICTIONARY[a]?.find(x => x.en === v || x.zh === v);
                         partsE.push(item ? item.en : v);
                         partsZ.push(item ? item.zh : v);
@@ -348,6 +353,8 @@
             document.getElementById('out-en').innerText = en;
             document.getElementById('out-zh').innerText = zh;
             document.getElementById('out-json').innerText = JSON.stringify({ en, zh }, null, 2);
+            
+            saveHistory(en, zh);
         }
 
         function randomizeAll() {
@@ -368,13 +375,53 @@
 
         function copyText(id) {
             const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text).then(() => alert("已複製到剪貼簿"));
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector(`button[onclick="copyText('${id}')"]`);
+                const originalText = btn.innerText;
+                btn.innerText = "✅ 已複製";
+                setTimeout(() => btn.innerText = originalText, 1500);
+            });
         }
 
         function resetAllFields() {
-            if(confirm("確定清空嗎？")) {
+            if(confirm("確定要清空所有欄位嗎？")) {
                 document.getElementById('promptForm').reset();
                 generatePrompt();
+            }
+        }
+
+        // 歷史紀錄功能
+        function saveHistory(en, zh) {
+            if (!en || en.length < 10) return;
+            let history = JSON.parse(localStorage.getItem('app_history') || '[]');
+            if (history.length > 0 && history[0].en === en) return;
+            history.unshift({ en, zh, time: new Date().toLocaleTimeString() });
+            localStorage.setItem('app_history', JSON.stringify(history.slice(0, 10)));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('app_history') || '[]');
+            if (history.length === 0) {
+                list.innerHTML = '<p style="padding:10px; color:#94a3b8; font-size:0.8rem;">尚無歷史紀錄</p>';
+                return;
+            }
+            list.innerHTML = history.map(item => `
+                <div class="history-item" onclick="loadHistoryItem('${item.en.replace(/'/g, "\\'")}')">
+                    <div style="color: var(--primary); font-weight: bold; margin-bottom: 4px;">${item.time}</div>
+                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.7;">${item.en}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadHistoryItem(en) {
+            const history = JSON.parse(localStorage.getItem('app_history') || '[]');
+            const item = history.find(h => h.en === en);
+            if (item) {
+                document.getElementById('out-en').innerText = item.en;
+                document.getElementById('out-zh').innerText = item.zh;
+                alert("已回載該筆提示詞至輸出區");
             }
         }
 
